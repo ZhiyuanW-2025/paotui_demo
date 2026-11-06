@@ -111,3 +111,16 @@ npm run build:static
 `deploy/nginx-paotui.conf` 是仅匹配 `paotui.shuge.work` 的 HTTP 站点模板。实际部署前需根据服务器现有 Nginx 或管理面板配置选择网站目录，之后为该子域名配置有效的 HTTPS 证书。不要直接替换服务器上的全局配置。
 
 使用宝塔或其他面板时：创建 `paotui.shuge.work` 静态站点，上传 `dist-static/` 的内容，将默认文档设为 `index.html`，申请并启用该域名的 HTTPS 证书。静态导出与本地 Demo 使用同一份界面和业务逻辑。
+
+## 当前线上部署
+
+访问地址：**https://paotui.shuge.work/**
+
+- 服务器使用 Nginx 提供静态页面，HTTP 自动跳转 HTTPS。
+- 线上文件位于 `/var/www/paotui/current`，该链接指向 `/var/www/paotui/releases/` 内的独立版本目录。
+- 本次发布的应用构建来自提交 `3f154692ae4a`；后续的文档或部署配置提交不改变这一应用产物。
+- 站点配置位于 `/etc/nginx/sites-available/paotui.shuge.work`，对应源码模板 `deploy/nginx-paotui-https.conf`。
+- HTTPS 使用该子域名专用的 Let's Encrypt 证书，自动续期由 `certbot.timer` 执行，续期后自动重新加载 Nginx。
+- 本项目的站点配置备份位于服务器 `/var/backups/paotui/`。更新时先构建并上传到新版本目录，验证后切换 `current` 链接；保留旧版本用于回退。
+
+SSH 私钥和证书私钥均不在仓库中。展示数据仍仅保存在访问者自己的浏览器中。
