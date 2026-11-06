@@ -81,7 +81,7 @@ npm test
 npm run build
 ```
 
-构建成功后可以通过 `npm start` 启动本地生产预览，具体地址以终端输出为准。产物包括 `dist/client` 和 `dist/server`，后者为 Cloudflare Worker 运行形式。未来绑定 shuge.work 时需要配置支持 Worker 的托管或调整输出方式；当前没有发布或修改域名。
+构建成功后可以通过 `npm start` 启动本地生产预览，具体地址以终端输出为准。产物包括 `dist/client` 和 `dist/server`，后者为 Cloudflare Worker 运行形式。也可以使用下方的静态导出，部署到 Nginx 等普通 Web 服务器。
 
 ## 代码结构
 
@@ -94,3 +94,20 @@ npm run build
 ## 演示边界
 
 这是浏览器内演示，不含真实账号系统、学生认证、支付网关、短信推送或服务端数据库。不同设备不共享数据，管理端为公开的演示入口；不要用于真实交易或填入真实个人信息。Web Locks 在当前浏览器的同一来源下协调写入，不替代正式上线所需的数据库事务与服务端权限校验。
+
+## 部署至 paotui.shuge.work
+
+作品展示使用浏览器本地数据，可直接部署为静态网站：
+
+```bash
+npm ci
+npm run check
+npm test
+npm run build:static
+```
+
+将 `dist-static/` 内的文件部署到网站根目录。`npm run preview:static` 可以在 `http://127.0.0.1:5190/` 检查静态产物。
+
+`deploy/nginx-paotui.conf` 是仅匹配 `paotui.shuge.work` 的 HTTP 站点模板。实际部署前需根据服务器现有 Nginx 或管理面板配置选择网站目录，之后为该子域名配置有效的 HTTPS 证书。不要直接替换服务器上的全局配置。
+
+使用宝塔或其他面板时：创建 `paotui.shuge.work` 静态站点，上传 `dist-static/` 的内容，将默认文档设为 `index.html`，申请并启用该域名的 HTTPS 证书。静态导出与本地 Demo 使用同一份界面和业务逻辑。
